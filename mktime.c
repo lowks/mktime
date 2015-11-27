@@ -7,7 +7,7 @@ const size_t DAYS[] = {0, 0, 86400, 172800, 259200, 345600, 432000, 518400, 6048
 const size_t HOURS[] = {0, 3600, 7200, 10800, 14400, 18000, 21600, 25200, 28800, 32400, 36000, 39600, 43200, 46800, 50400, 54000, 57600, 61200, 64800, 68400, 72000, 75600, 79200, 82800, 86400};
 const size_t MINUTES[] = {0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 660, 720, 780, 840, 900, 960, 1020, 1080, 1140, 1200, 1260, 1320, 1380, 1440, 1500, 1560, 1620, 1680, 1740, 1800, 1860, 1920, 1980, 2040, 2100, 2160, 2220, 2280, 2340, 2400, 2460, 2520, 2580, 2640, 2700, 2760, 2820, 2880, 2940, 3000, 3060, 3120, 3180, 3240, 3300, 3360, 3420, 3480, 3540, 3600};
 
-#define ATOI(digitBuffer, bEnd) \
+#define ATOI(digitBuffer, bEnd, num) \
 	num = 0, multiplier = 1, bPtr = bEnd - 1;\
 	while (bPtr >= digitBuffer) {\
 		num += (*bPtr - '0') * multiplier;\
@@ -25,7 +25,7 @@ const size_t MINUTES[] = {0, 60, 120, 180, 240, 300, 360, 420, 480, 540, 600, 66
 			*d++ = *s;\
 			if (s[1] < '0' || s[1] > '9') {\
 				*d = 0;\
-				ATOI(digitBuffer, d);\
+				ATOI(digitBuffer, d, num);\
 				PyTuple_SET_ITEM(tuple, index++, PyInt_FromSize_t(num));\
 				if (index >= 9) return tuple;\
 				d = NULL;\
@@ -63,7 +63,7 @@ _split(PyObject* self, PyObject* arg) {
 			*d++ = *s;\
 			if (s[1] < '0' || s[1] > '9') {\
 				*d = 0;\
-				ATOI(digitBuffer, d);\
+				ATOI(digitBuffer, d, num);\
 				tbuf[index++] = num; \
 				if (index >= 6) break;\
 				d = NULL;\
@@ -111,12 +111,33 @@ _mktime_tuple(PyObject* self, PyObject* arg) {
 	return PyInt_FromSize_t(timestamp);
 }
 
+static PyObject*
+_mktime_ymd(PyObject* self, PyObject* arg) {
+	if (!PyUnicode_CheckExact(arg)) return NULL;
+
+	Py_UNICODE *src = PyUnicode_AS_UNICODE(arg), *bPtr;
+	size_t year = 0, month = 0, day = 0, timestamp = 0, multiplier, size = PyUnicode_GET_SIZE(arg);
+
+	if (size >= 4) { ATOI(src, src + 4, year); }
+	if (size >= 6) { ATOI(src + 4, src + 6, month); }
+	if (size >= 8) { ATOI(src + 6, src + 8, day); }
+
+	if (year < 1970 || year > 2038 || month > 13 || day > 32) {
+		Py_RETURN_NONE;
+	}
+
+	timestamp = YEARS[year - 1970] + (IS_LEAP(year) ? MONTHS2[month] : MONTHS1[month]) + DAYS[day];
+
+	return PyInt_FromSize_t(timestamp);
+}
+
 static PyMethodDef exports[] = {
 	{"split_u", (PyCFunction)_split_u, METH_O, "Split unicode time string to time tuple"},
 	{"split", (PyCFunction)_split, METH_O, "Split time string to time tuple"},
 	{"mktime_u", (PyCFunction)_mktime_u, METH_O, "Split unicode time string to timestamp"},
 	{"mktime", (PyCFunction)_mktime, METH_O, "Split time string to timestamp"},
 	{"mktime_tuple", (PyCFunction)_mktime_tuple, METH_O, "Split time tuple to timestamp"},
+	{"mktime_ymd", (PyCFunction)_mktime_ymd, METH_O, "Split Ymd time unicode string to timestamp"},
 	{NULL, NULL}
 };
 
