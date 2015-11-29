@@ -95,11 +95,16 @@ _mktime_u(PyObject* self, PyObject* arg) {
 
 static PyObject*
 _mktime_tuple(PyObject* self, PyObject* arg) {
-	size_t year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0, timestamp = 0;
+	if (!PyTuple_CheckExact(arg)) return NULL;
+	PyTupleObject* tuple = (PyTupleObject*) arg;
+	size_t year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0, size = tuple->ob_size, timestamp = 0;
 
-	if (!PyArg_ParseTuple(arg, "I|IIIII", &year, &month, &day, &hour, &minute, &second)) {
-		return NULL;
-	}
+	if (size > 0) year = PyInt_AsSsize_t(tuple->ob_item[0]);
+	if (size > 1) month = PyInt_AsSsize_t(tuple->ob_item[1]);
+	if (size > 2) day = PyInt_AsSsize_t(tuple->ob_item[2]);
+	if (size > 3) hour = PyInt_AsSsize_t(tuple->ob_item[3]);
+	if (size > 4) minute = PyInt_AsSsize_t(tuple->ob_item[4]);
+	if (size > 5) second = PyInt_AsSsize_t(tuple->ob_item[5]);
 
 	if (year < 1970 || year > 2038 || month > 13 || day > 32 || hour > 24 || minute > 60 || second > 60) {
 		Py_RETURN_NONE;
