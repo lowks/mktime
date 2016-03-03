@@ -1,3 +1,4 @@
+#include <time.h>
 #include "Python.h"
 
 const size_t YEARS[] = {0, 31536000, 63072000, 94694400, 126230400, 157766400, 189302400, 220924800, 252460800, 283996800, 315532800, 347155200, 378691200, 410227200, 441763200, 473385600, 504921600, 536457600, 567993600, 599616000, 631152000, 662688000, 694224000, 725846400, 757382400, 788918400, 820454400, 852076800, 883612800, 915148800, 946684800, 978307200, 1009843200, 1041379200, 1072915200, 1104537600, 1136073600, 1167609600, 1199145600, 1230768000, 1262304000, 1293840000, 1325376000, 1356998400, 1388534400, 1420070400, 1451606400, 1483228800, 1514764800, 1546300800, 1577836800, 1609459200, 1640995200, 1672531200, 1704067200, 1735689600, 1767225600, 1798761600, 1830297600, 1861920000, 1893456000, 1924992000, 1956528000, 1988150400, 2019686400, 2051222400, 2082758400, 2114380800, 2145916800};
@@ -136,6 +137,11 @@ _mktime_ymd(PyObject* self, PyObject* arg) {
 	return PyInt_FromSize_t(timestamp);
 }
 
+static PyObject*
+_time(PyObject* self) {
+	return PyInt_FromLong(time(NULL));
+}
+
 static PyMethodDef exports[] = {
 	{"split_u", (PyCFunction)_split_u, METH_O, "Split unicode time string to time tuple"},
 	{"split", (PyCFunction)_split, METH_O, "Split time string to time tuple"},
@@ -143,6 +149,7 @@ static PyMethodDef exports[] = {
 	{"mktime", (PyCFunction)_mktime, METH_O, "Split time string to timestamp"},
 	{"mktime_tuple", (PyCFunction)_mktime_tuple, METH_O, "Split time tuple to timestamp"},
 	{"mktime_ymd", (PyCFunction)_mktime_ymd, METH_O, "Split Ymd time unicode string to timestamp"},
+	{"time", (PyCFunction)_time, METH_NOARGS, "time as int"},
 	{NULL, NULL}
 };
 
