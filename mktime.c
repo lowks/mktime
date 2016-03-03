@@ -142,6 +142,11 @@ _time(PyObject* self) {
 	return PyInt_FromLong(time(NULL));
 }
 
+static PyObject*
+_clock(PyObject* self) {
+	return PyInt_FromLong(clock());
+}
+
 static PyMethodDef exports[] = {
 	{"split_u", (PyCFunction)_split_u, METH_O, "Split unicode time string to time tuple"},
 	{"split", (PyCFunction)_split, METH_O, "Split time string to time tuple"},
@@ -150,6 +155,7 @@ static PyMethodDef exports[] = {
 	{"mktime_tuple", (PyCFunction)_mktime_tuple, METH_O, "Split time tuple to timestamp"},
 	{"mktime_ymd", (PyCFunction)_mktime_ymd, METH_O, "Split Ymd time unicode string to timestamp"},
 	{"time", (PyCFunction)_time, METH_NOARGS, "time as int"},
+	{"clock", (PyCFunction)_clock, METH_NOARGS, "clock as int"},
 	{NULL, NULL}
 };
 
