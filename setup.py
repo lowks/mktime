@@ -13,6 +13,6 @@ setup(
     version='0.0.2',
     url = 'https://github.com/S-YOU/mktime',
     download_url = 'https://github.com/S-YOU/mktime/tarball/master',
+    description = 'mktime from str/unicode/tuple',
     ext_modules=[ext]
 )
-
