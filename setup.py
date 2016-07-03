@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-ext = Extension('mktime', 
+ext = Extension('mktime',
     sources=['mktime.c'],
     extra_compile_args=['-O3', '-std=c99', '-Ofast'],
     extra_link_args=["-s"],
@@ -8,10 +8,11 @@ ext = Extension('mktime',
 )
 
 setup(
-    name='mktime', 
-    author='S-YOU', author_email='S-YOU@users.noreply.github.com', 
-    version='0.0.1', 
+    name='mktime',
+    author='S-YOU', author_email='S-YOU@users.noreply.github.com',
+    version='0.0.2',
     url = 'https://github.com/S-YOU/mktime',
     download_url = 'https://github.com/S-YOU/mktime/tarball/master',
     ext_modules=[ext]
 )
+
